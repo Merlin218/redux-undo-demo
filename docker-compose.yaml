@@ -1,0 +1,18 @@
+version: "3"
+
+services:
+  learn-react:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    labels:
+      # 设置Host 为 localhost 进行域名访问
+      - traefik.http.routers.redux-undo-demo.rule=Host(`mid-report.merlin218.top`)
+      # 开启HTTPS
+      - traefik.http.routers.redux-undo-demo.tls=true
+      - traefik.http.routers.redux-undo-demo.tls.certresolver=le
+
+networks:
+  default:
+    external:
+      name: traefik_default
