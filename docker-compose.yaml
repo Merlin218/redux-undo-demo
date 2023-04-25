@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     labels:
       # 设置Host 为 localhost 进行域名访问
-      - traefik.http.routers.redux-undo-demo.rule=Host(`mid-report.merlin218.top`)
+      - traefik.http.routers.redux-undo-demo.rule=Host(`redux-undo-demo.merlin218.top`)
       # 开启HTTPS
       - traefik.http.routers.redux-undo-demo.tls=true
       - traefik.http.routers.redux-undo-demo.tls.certresolver=le
