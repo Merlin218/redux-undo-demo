@@ -8,13 +8,13 @@ const initialState: State = {
   value: 0,
 };
 const counterSlice = createSlice({
-  name: "counter",
+  name: "人",
   initialState,
   reducers: {
-    add: (state, action: PayloadAction<number>) => {
+    前进: (state, action: PayloadAction<number>) => {
       state.value += action.payload;
     },
-    subtract: (state, action: PayloadAction<number>) => {
+    后退: (state, action: PayloadAction<number>) => {
       state.value -= action.payload;
     },
     multiple: (state, action: PayloadAction<number>) => {
@@ -23,5 +23,5 @@ const counterSlice = createSlice({
   },
 });
 
-export const { add, subtract, multiple } = counterSlice.actions;
+export const { 前进, 后退, multiple } = counterSlice.actions;
 export default counterSlice.reducer;

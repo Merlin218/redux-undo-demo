@@ -1,10 +1,11 @@
-import { useState, FC, ReactNode, useMemo } from "react";
+import { useState, FC, ReactNode, useMemo, useEffect, useCallback } from "react";
 import { Provider, connect, ConnectedProps, useDispatch } from "react-redux";
 import store from "./store";
-import { add, subtract } from "./store/counter";
+import { 前进, 后退 } from "./store/counter";
 import { redoAction, undoAction } from "./store/middlewares/undo";
 import { RootState } from "./types";
 import "./App.css";
+import { FluentEmojiFlatCowboyHatFace } from "./icons/face";
 
 interface UpdaterProps {
   trigger: (value: number) => void;
@@ -18,6 +19,10 @@ const Updater: FC<UpdaterProps> = ({ trigger, tip }) => {
       <td>{tip}</td>
       <td>
         <input
+          style={{
+            marginRight: 20,
+            textAlign: 'left'
+          }}
           value={value}
           onInput={(e) => setValue(Number(e.currentTarget.value))}
         />
@@ -35,7 +40,9 @@ const reduxConnector = connect((state: RootState) => ({
   current: state.counter["@@UNDOABLE"].current,
 }));
 
-interface CompProps extends ConnectedProps<typeof reduxConnector> {}
+interface CompProps extends ConnectedProps<typeof reduxConnector> { }
+
+const treasurePosition = 3;
 
 const Comp: FC<CompProps> = function ({
   value,
@@ -47,23 +54,23 @@ const Comp: FC<CompProps> = function ({
   const dispatch = useDispatch();
   const [Logs, setLogs] = useState<string[]>([]);
   const undo = () => {
-    setLogs((last) => [...last, "撤销"]);
+    setLogs((last) => [...last, "时空回退"]);
     dispatch(undoAction());
   };
 
   const redo = () => {
-    setLogs((last) => [...last, "重做"]);
+    setLogs((last) => [...last, "时空还原"]);
     dispatch(redoAction());
   };
 
   const addHandler = (value: number) => {
-    setLogs((last) => [...last, "加" + value]);
-    dispatch(add(value));
+    setLogs((last) => [...last, "前进" + value]);
+    dispatch(前进(value));
   };
 
   const subtractHandler = (value: number) => {
-    setLogs((last) => [...last, "减" + value]);
-    dispatch(subtract(value));
+    setLogs((last) => [...last, "后退" + value]);
+    dispatch(后退(value));
   };
 
   const Histrory = useMemo(() => {
@@ -82,37 +89,82 @@ const Comp: FC<CompProps> = function ({
   const Handler = useMemo(() => {
     return (
       <>
-        <button disabled={!canUndo} onClick={undo}>
-          撤销
+        <button style={{
+          marginRight: 20,
+        }} disabled={!canUndo} onClick={undo}>
+          时空回退（撤销）
         </button>
         <button disabled={!canRedo} onClick={redo}>
-          重做
+          时空还原（重做）
         </button>
       </>
     );
   }, [dispatch, canUndo, canRedo]);
 
+  const [times, setTimes] = useState(0);
+  const judge = useCallback((index: number) => {
+    if (times < 2) {
+      return index === treasurePosition
+    } else {
+      return index === value
+    }
+  }, [value, times])
+  useEffect(() => {
+    if (value === treasurePosition) {
+      setTimes((last) => last + 1);
+    }
+  }, [value])
+
   return (
-    <table>
-      <tr>
-        <td>当前：</td>
-        <td>{value}</td>
-      </tr>
-      <Updater tip="加" trigger={addHandler}></Updater>
-      <Updater tip="减" trigger={subtractHandler}></Updater>
-      <tr>
-        <td>操作：</td>
-        <td>{Handler}</td>
-      </tr>
-      <tr>
-        <td>操作栈：</td>
-        <td>{Histrory}</td>
-      </tr>
-      <tr>
-        <td>操作流水日志：</td>
-        <td>{Logs.join(" ➡️ ")}</td>
-      </tr>
-    </table>
+    <>
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-evenly',
+        width: '100%'
+      }}>
+        {Array(10).fill(0).map((_, index) => index).map((item) => (
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column'
+          }} key={item}>
+            <FluentEmojiFlatCowboyHatFace style={{
+              visibility: item !== value ? 'hidden' : 'visible',
+            }} />
+            {item}
+            {judge(item) && <div>💎</div>}
+          </div>
+        ))}
+      </div>
+      <table style={{
+        marginTop: 30,
+        width: '100%'
+      }}>
+        <tr>
+          <th style={{
+            width: 150
+          }}></th>
+          <th></th>
+        </tr>
+        <tr>
+          <td>当前位置：</td>
+          <td>{value}</td>
+        </tr>
+        <Updater tip="前进" trigger={addHandler}></Updater>
+        {/* <Updater tip="后退" trigger={subtractHandler}></Updater> */}
+        <tr>
+          <td>操作：</td>
+          <td>{Handler}</td>
+        </tr>
+        {/* <tr>
+          <td>操作栈：</td>
+          <td>{Histrory}</td>
+        </tr> */}
+        <tr>
+          <td>操作流水日志：</td>
+          <td>{Logs.join(" ➡️ ")}</td>
+        </tr>
+      </table>
+    </>
   );
 };
 
