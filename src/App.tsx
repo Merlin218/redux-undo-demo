@@ -103,7 +103,9 @@ const Comp: FC<CompProps> = function ({
 
   const [times, setTimes] = useState(0);
   const judge = useCallback((index: number) => {
-    if (times < 2) {
+    if(times === 0) {
+      return false
+    }else if(times < 2) {
       return index === treasurePosition
     } else {
       return index === value
