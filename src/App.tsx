@@ -52,7 +52,7 @@ const Comp: FC<CompProps> = function ({
   current,
 }) {
   const dispatch = useDispatch();
-  const [Logs, setLogs] = useState<string[]>([]);
+  const [Logs, setLogs] = useState<string[]>(['初始位置：0']);
   const undo = () => {
     setLogs((last) => [...last, "时空回退"]);
     dispatch(undoAction());
