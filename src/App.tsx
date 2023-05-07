@@ -267,7 +267,7 @@ export default function App() {
           </div>
           <div>
             <button style={{
-              marginTop: 20
+              margin: '30px 0'
             }} onClick={replay}>上帝回放</button>
           </div>
         </>
